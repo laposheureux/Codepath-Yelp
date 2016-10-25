@@ -63,9 +63,10 @@ class BusinessesViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let fvc = segue.destination as! FiltersViewController
+        fvc.delegate = self
+        
         if let filtersState = filtersState {
-            let fvc = segue.destination as! FiltersViewController
-            fvc.delegate = self
             fvc.existingFiltersState = filtersState
         }
     }

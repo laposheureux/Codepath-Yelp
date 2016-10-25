@@ -1,34 +1,32 @@
-### Basic Yelp client
+# Yelp
 
-This is a headless example of how to implement an OAuth 1.0a Yelp API client. The Yelp API provides an application token that allows applications to make unauthenticated requests to their search API.
+This is an application that provides a filterable interface to the Yelp search API
 
-### Next steps
+## Description
 
-- Check out `BusinessesViewController.swift` to see how to use the `Business` model.
+This app will allow you to choose deals, distance, sort, and category filters and display the results from Yelp laid out entire with autolayout
 
-### Sample request
+## Codepath Details
 
-**Basic search with query**
+Time spent: 10 hours
 
-```
-Business.searchWithTerm("Thai", completion: { (businesses: [Business]!, error: NSError!) -> Void in
-    self.businesses = businesses
-    
-    for business in businesses {
-        print(business.name!)
-        print(business.address!)
-    }
-})
-```
+### User Stories
 
-**Advanced search with categories, sort, and deal filters**
+#### Search results page
 
-```
-Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
+* [x] Required: Table rows are dynamic height
+* [x] Required: Custom cells use auto layout and manage all data scenarios and device rotation
+* [x] Required: Search bar is in the navigation bar
 
-    for business in businesses {
-        print(business.name!)
-        print(business.address!)
-    }
-}
-```
+#### Filter page
+
+* [x] Required: Include filters category, sort, distance, deals
+* [x] Required: Filters table organized into sections
+* [x] Required: Search button dismisses filters page and triggers a search with new settings if a query is present in the search bar
+* [x] Extra: Maintain filter state for more than one search and pass it back to the filters view
+
+### Walkthrough
+
+1. [iPhone 5s Simulator] Shows multiple searches and filters and autolayout constraints at work.
+
+  ![Yelp](Yelp.gif)

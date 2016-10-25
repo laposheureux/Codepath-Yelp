@@ -4,7 +4,7 @@ This is an application that provides a filterable interface to the Yelp search A
 
 ## Description
 
-This app will allow you to choose deals, distance, sort, and category filters and display the results from Yelp laid out entire with autolayout
+This app will allow you to choose deals, distance, sort, and category filters and display the results from Yelp laid out entirely with autolayout
 
 ## Codepath Details
 

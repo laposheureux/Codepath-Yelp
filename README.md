@@ -10,7 +10,7 @@ This app will allow you to choose deals, distance, sort, and category filters an
 
 Time spent: 10 hours
 
-### User Stories
+## User Stories
 
 #### Search results page
 
@@ -25,7 +25,7 @@ Time spent: 10 hours
 * [x] Required: Search button dismisses filters page and triggers a search with new settings if a query is present in the search bar
 * [x] Extra: Maintain filter state for more than one search and pass it back to the filters view
 
-### Walkthrough
+## Walkthrough
 
 1. [iPhone 5s Simulator] Shows multiple searches and filters and autolayout constraints at work.
 

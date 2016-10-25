@@ -12,54 +12,49 @@ class BusinessesViewController: UIViewController {
     @IBOutlet var tableView: UITableView!
     
     var businesses: [Business] = []
-    var filteredBusinesses: [Business] = []
+    var filtersState: FiltersState?
     
     var searchController: UISearchController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.delegate = self
         tableView.dataSource = self
         tableView.estimatedRowHeight = 98
         tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.allowsSelection = false
         
-        searchController = UISearchController(searchResultsController: nil)
-        searchController.searchResultsUpdater = self
-        searchController.dimsBackgroundDuringPresentation = false
-        searchController.hidesNavigationBarDuringPresentation = false
-        searchController.searchBar.sizeToFit()
-        navigationItem.titleView = searchController.searchBar
+        let searchBar: UISearchBar = UISearchBar()
+        searchBar.tintColor = UIColor.white
+        searchBar.placeholder = "Restaurants"
+        searchBar.delegate = self
+        navigationItem.titleView = searchBar
         
         definesPresentationContext = true
-        
-        Business.searchWithTerm(term: "Thai", completion: { [weak self] (businesses: [Business]?, error: Error?) -> Void in
-            if let businesses = businesses {
-                self?.businesses = businesses
-                self?.filteredBusinesses = businesses
-                
-                for business in businesses {
-                    print(business.name!)
-                    print(business.address!)
+    }
+    
+    func searchWithTerm(term: String) {
+        if let filtersState = filtersState {
+            Business.searchWithTerm(term: term, sort: filtersState.sort, categories: filtersState.categories, deals: filtersState.deals, completion: { [weak self] (businesses: [Business]?, error: Error?) -> Void in
+                if let businesses = businesses {
+                    self?.businesses = businesses
+                } else {
+                    self?.businesses.removeAll()
                 }
-            } else {
-                self?.businesses.removeAll()
-            }
-            
-            self?.tableView.reloadData()
-        })
-        
-        /* Example of Yelp search with more search options specified
-         Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
-         self.businesses = businesses
-         
-         for business in businesses {
-         print(business.name!)
-         print(business.address!)
-         }
-         }
-         */
-        
+                
+                self?.tableView.reloadData()
+            })
+        } else {
+            Business.searchWithTerm(term: term, completion: { [weak self] (businesses: [Business]?, error: Error?) -> Void in
+                if let businesses = businesses {
+                    self?.businesses = businesses
+                } else {
+                    self?.businesses.removeAll()
+                }
+                
+                self?.tableView.reloadData()
+            })
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -67,46 +62,45 @@ class BusinessesViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let filtersState = filtersState {
+            let fvc = segue.destination as! FiltersViewController
+            fvc.delegate = self
+            fvc.existingFiltersState = filtersState
+        }
+    }
     
 }
 
 extension BusinessesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredBusinesses.count
+        return businesses.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "businessTableViewCell") as! BusinessTableViewCell
         
-        cell.business = filteredBusinesses[indexPath.row]
+        cell.business = businesses[indexPath.row]
         
         return cell
     }
 }
 
-extension BusinessesViewController: UITableViewDelegate {
-    
+extension BusinessesViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let term = searchBar.text {
+            searchWithTerm(term: term)
+            searchBar.resignFirstResponder()
+        }
+    }
 }
 
-extension BusinessesViewController: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        if let searchText = searchController.searchBar.text {
-            filteredBusinesses = searchText.isEmpty ? businesses : businesses.filter({(business: Business) -> Bool in
-                guard let businessName = business.name else { return false }
-                
-                return businessName.range(of: searchText, options: .caseInsensitive, range: nil, locale: nil) != nil
-            })
-            
-            tableView.reloadData()
+extension BusinessesViewController: FiltersDelegate {
+    func filtersData(didChangeValue value: FiltersState) {
+        filtersState = value
+        
+        if let term = (navigationItem.titleView as? UISearchBar)?.text {
+            searchWithTerm(term: term)
         }
     }
 }

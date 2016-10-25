@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SVProgressHUD
 
 class BusinessesViewController: UIViewController {
     @IBOutlet var tableView: UITableView!
@@ -34,11 +35,14 @@ class BusinessesViewController: UIViewController {
     }
     
     func searchWithTerm(term: String) {
+        SVProgressHUD.show()
         if let filtersState = filtersState {
-            Business.searchWithTerm(term: term, sort: filtersState.sort, categories: filtersState.categories, deals: filtersState.deals, completion: { [weak self] (businesses: [Business]?, error: Error?) -> Void in
+            Business.searchWithTerm(term: term, sort: filtersState.sort, categories: filtersState.categories, deals: filtersState.deals, distance: filtersState.distance, completion: { [weak self] (businesses: [Business]?, error: Error?) -> Void in
                 if let businesses = businesses {
+                    SVProgressHUD.dismiss()
                     self?.businesses = businesses
-                } else {
+                } else if let error = error {
+                    SVProgressHUD.showError(withStatus: error.localizedDescription)
                     self?.businesses.removeAll()
                 }
                 
@@ -47,8 +51,10 @@ class BusinessesViewController: UIViewController {
         } else {
             Business.searchWithTerm(term: term, completion: { [weak self] (businesses: [Business]?, error: Error?) -> Void in
                 if let businesses = businesses {
+                    SVProgressHUD.dismiss()
                     self?.businesses = businesses
-                } else {
+                } else if let error = error {
+                    SVProgressHUD.showError(withStatus: error.localizedDescription)
                     self?.businesses.removeAll()
                 }
                 

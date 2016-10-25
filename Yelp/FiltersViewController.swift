@@ -267,7 +267,7 @@ class FiltersViewController: UIViewController {
             dealsState = false
             distanceState = 0
             sortState = 0
-            categoriesState = [Bool](repeating: true, count: categoriesData.count)
+            categoriesState = [Bool](repeating: false, count: categoriesData.count)
         }
         
         tableView.reloadData()
